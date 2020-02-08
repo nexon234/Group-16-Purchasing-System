@@ -8,7 +8,7 @@
      
       var i=1;
      $("#add_row").click(function(){
-      $('#addr'+i).html("<td>"+ (i+1) +"</td><td><input name='item_id' type='item_id' placeholder='Item ID' class='form-control input-md'   /> </td><td><input  name='item_name' type='text' placeholder='Item Name'  class='form-control input-md'></td><td><input  name='description' type='text' placeholder='Description'  class='form-control input-md' ></td><td><input name='quantity' type='text' placeholder='Quantity' class='form-control input-md'  /> </td><td><input name='unit_price' type='text' placeholder='Price Per Unit' class='form-control input-md'  /> </td>");
+      $('#addr'+i).html("<td>"+ (i+1) +"</td><td><input name='item_id' type='item_id' placeholder='Item ID' class='form-control input-md'   /> </td><td><input  name='item_name' type='text' placeholder='Item Name'  class='form-control input-md'></td><td><input  name='description' type='text' placeholder='Description'  class='form-control input-md' ></td><td class='change_color1"+i+"'><input name='quantity' type='text' placeholder='Quantity' class='form-control input-md'  /> </td><td class='change_color2"+i+"'><input name='unit_price' type='text' placeholder='Price Per Unit' class='form-control input-md'  /> </td>");
 
       $('#tab_logic').append('<tr id="addr'+(i+1)+'"></tr>');
       i++; 
@@ -18,13 +18,52 @@
 		 $("#addr"+(i-1)).html('');
 		 i--;
 		 }
-	 });
+        });
+        $('#form').submit(function (e) {
+            var isnumQuantity = [];
+            var j;
+            for (j = 0; j < i; j++) {
+              isnumQuantity.push(/^\d+$/.test(document.getElementsByName('quantity')[j].value));
+            }
+            
+            var isnumUnitPrice = [];
+            for (j = 0; j < i; j++) {
+              isnumUnitPrice.push(/^\d*\.?\d+$/.test(document.getElementsByName('unit_price')[j].value));
+            }
+            for (j = 0; j < i; j++) {
+                if (isnumQuantity[j] == true && isnumUnitPrice[j] == true) {
+                    //alert('true');
+                    $(".change_color1" + j).css("background", "white");
+                    $(".change_color2"+ j).css("background","white");
+                }
+                else if (isnumQuantity[j] == false && isnumUnitPrice[j] == false) {
+                    $(".change_color1" + j).css("background", "red");
+                    $(".change_color2" + j).css("background", "red");
+                    e.preventDefault();
+                    alert('quantity ' + (j+1) + ' and unit_price ' + (j+1) + ' input is not a number');
+                    //alert('prevent submit');
+                } else if (isnumQuantity[j] == false && isnumUnitPrice[j] == true) {
+                    e.preventDefault();
+                    alert('quantity ' + (j + 1) + ' input is not a number');
+                    $(".change_color1" + j).css("background", "red");
+                    $(".change_color2" + j).css("background", "white");
+                    //alert('prevent submit');
+                }
+                else if (isnumQuantity[j] == true && isnumUnitPrice[j] == false) {
+                    e.preventDefault();
+                    alert('unit_price ' + (j + 1) + ' input is not a number');
+                    $(".change_color1" + j).css("background", "white");
+                    $(".change_color2" + j).css("background", "red");
+                    //alert('prevent submit');
+                }
+            }
+});
 
 });
 </script>
 <div class="formpurchaseorder margintop" >
 
-    <form class="purchaseordersubmission" action="purchaserequisitionconfirmation" method="POST">
+    <form id="form"class="purchaseordersubmission" action="purchaserequisitionconfirmation" method="POST">
       {% csrf_token %}
         <div class="row margintop">
             <div class="col">
@@ -55,11 +94,11 @@
 				<tbody name="item_rows">
 					<tr id='addr0'>
 						<td>1</td>
-                        <td> <input type="text" name='item_id' placeholder='Item id'  class="form-control" /> </td>
-						<td><input type="text" name="item_name"  placeholder='Item name' class="form-control" ></td>
-						<td><input type="text" name='description' placeholder='Description' class="form-control" /></td>
-                        <td><input type="text" name='quantity' placeholder='Quantity'  class="form-control" /></td>
-                        <td><input type="text" name='unit_price' placeholder='Price Per Unit'  class="form-control"  /></td>
+                        <td> <input type="text" name='item_id' placeholder='Item id'  class="form-control" required/> </td>
+						<td><input type="text" name="item_name"  placeholder='Item name' class="form-control" required></td>
+						<td><input type="text" name='description' placeholder='Description' class="form-control" required/></td>
+                        <td class="change_color10"><input type="text" name='quantity' placeholder='Quantity'  class="form-control" required/></td>
+                        <td class="change_color20"><input type="text" name='unit_price' placeholder='Price Per Unit'  class="form-control"  required/></td>
 					</tr> 
                     <tr id='addr1'></tr>
                
